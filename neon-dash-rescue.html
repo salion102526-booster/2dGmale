@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neon Dash Rescue</title>
+  <link rel="preconnect" href="https://api.fontshare.com" />
+  <link href="https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@500,700,800&f[]=satoshi@400,500,700&display=swap" rel="stylesheet">
+  <style>
+    :root, [data-theme="light"] {
+      --text-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+      --text-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);
+      --text-base: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);
+      --text-lg: clamp(1.125rem, 1rem + 0.75vw, 1.5rem);
+      --text-xl: clamp(1.5rem, 1.2rem + 1.25vw, 2.25rem);
+      --text-2xl: clamp(2rem, 1.2rem + 2.5vw, 3.5rem);
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem; --space-4: 1rem;
+      --space-5: 1.25rem; --space-6: 1.5rem; --space-8: 2rem; --space-10: 2.5rem;
+      --space-12: 3rem; --space-16: 4rem;
+      --color-bg: #f7f6f2; --color-surface: #f9f8f5; --color-surface-2: #fbfbf9;
+      --color-surface-offset: #edeae5; --color-border: #d4d1ca; --color-divider: #dcd9d5;
+      --color-text: #28251d; --color-text-muted: #6f6d67; --color-text-faint: #9d9b95;
+      --color-primary: #01696f; --color-primary-hover: #0c4e54; --color-danger: #a13544;
+      --color-warning: #d19900; --color-success: #437a22; --color-text-inverse: #f9f8f4;
+      --radius-sm: 0.375rem; --radius-md: 0.5rem; --radius-lg: 0.75rem; --radius-xl: 1rem;
+      --shadow-sm: 0 1px 2px rgba(20,20,20,.06); --shadow-md: 0 12px 30px rgba(20,20,20,.12);
+      --font-display: 'Cabinet Grotesk', 'Inter', sans-serif;
+      --font-body: 'Satoshi', 'Inter', sans-serif;
+    }
+    [data-theme="dark"] {
+      --color-bg: #111315; --color-surface: rgba(255,255,255,.06); --color-surface-2: rgba(255,255,255,.09);
+      --color-surface-offset: rgba(255,255,255,.12); --color-border: rgba(255,255,255,.14); --color-divider: rgba(255,255,255,.10);
+      --color-text: #ece8df; --color-text-muted: #b6b0a4; --color-text-faint: #8a857d;
+      --color-primary: #49d7cf; --color-primary-hover: #2cb6af; --color-danger: #ff6b7a;
+      --color-warning: #ffca61; --color-success: #7fd78d; --color-text-inverse: #131618;
+      --shadow-sm: 0 1px 2px rgba(0,0,0,.22); --shadow-md: 0 18px 50px rgba(0,0,0,.35);
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { color-scheme: dark; }
+    body {
+      min-height: 100dvh; font-family: var(--font-body); font-size: var(--text-base); color: var(--color-text);
+      background:
+        radial-gradient(circle at top, rgba(73,215,207,.12), transparent 28%),
+        radial-gradient(circle at 20% 80%, rgba(255,202,97,.08), transparent 24%),
+        linear-gradient(180deg, #171a1d 0%, #0f1113 100%);
+      line-height: 1.6; overflow: hidden;
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; border: 0; }
+    .shell {
+      min-height: 100dvh; display: grid; grid-template-columns: minmax(280px, 360px) 1fr;
+      gap: var(--space-6); padding: clamp(var(--space-4), 3vw, var(--space-8));
+    }
+    .panel {
+      background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-xl);
+      backdrop-filter: blur(16px); box-shadow: var(--shadow-md);
+    }
+    .sidebar { padding: var(--space-6); display: flex; flex-direction: column; gap: var(--space-6); }
+    .brand { display: flex; align-items: center; gap: var(--space-3); }
+    .brand svg { width: 42px; height: 42px; color: var(--color-primary); }
+    h1, h2 { font-family: var(--font-display); line-height: 1.02; }
+    h1 { font-size: var(--text-2xl); letter-spacing: -.04em; }
+    h2 { font-size: var(--text-lg); margin-bottom: var(--space-2); }
+    .lede { color: var(--color-text-muted); max-width: 32ch; }
+    .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3); }
+    .stat-card {
+      padding: var(--space-4); border-radius: var(--radius-lg); background: var(--color-surface-2);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .stat-label { display: block; font-size: var(--text-xs); color: var(--color-text-faint); text-transform: uppercase; letter-spacing: .08em; }
+    .stat-value { font-size: var(--text-xl); font-weight: 700; font-variant-numeric: tabular-nums lining-nums; }
+    .controls, .notes { padding-top: var(--space-3); border-top: 1px solid var(--color-divider); }
+    .controls ul, .notes ul { list-style: none; display: grid; gap: var(--space-2); }
+    .controls li, .notes li { color: var(--color-text-muted); }
+    .controls strong, .notes strong { color: var(--color-text); }
+    .actions { display: flex; flex-wrap: wrap; gap: var(--space-3); }
+    .btn {
+      min-height: 44px; padding: .8rem 1rem; border-radius: var(--radius-full); font-weight: 700;
+      transition: transform 180ms ease, background 180ms ease, color 180ms ease, box-shadow 180ms ease;
+    }
+    .btn:hover { transform: translateY(-1px); }
+    .btn-primary { background: var(--color-primary); color: var(--color-text-inverse); box-shadow: 0 10px 30px rgba(73,215,207,.2); }
+    .btn-secondary { background: transparent; color: var(--color-text); border: 1px solid var(--color-border); }
+    .game-wrap { position: relative; display: grid; }
+    canvas {
+      width: 100%; height: min(84vh, 820px); border-radius: 28px; background: linear-gradient(180deg, #0f1720, #090c12);
+      border: 1px solid rgba(255,255,255,.12); box-shadow: var(--shadow-md);
+    }
+    .hud {
+      position: absolute; inset: var(--space-4); display: flex; justify-content: space-between; align-items: flex-start;
+      pointer-events: none;
+    }
+    .pill {
+      background: rgba(10,12,16,.55); color: #f4efe6; border: 1px solid rgba(255,255,255,.1);
+      border-radius: 999px; padding: .65rem .9rem; backdrop-filter: blur(12px); font-size: var(--text-sm);
+      font-variant-numeric: tabular-nums lining-nums;
+    }
+    .overlay {
+      position: absolute; inset: 0; display: grid; place-items: center; padding: var(--space-6);
+      pointer-events: none;
+    }
+    .overlay-card {
+      width: min(560px, 92%); padding: clamp(var(--space-5), 4vw, var(--space-8)); text-align: center;
+      background: rgba(8,10,14,.72); color: #f8f4eb; border: 1px solid rgba(255,255,255,.14);
+      border-radius: 28px; backdrop-filter: blur(20px); box-shadow: var(--shadow-md); pointer-events: auto;
+    }
+    .overlay-card p { color: rgba(248,244,235,.8); margin-top: var(--space-3); }
+    .overlay-card .actions { justify-content: center; margin-top: var(--space-5); }
+    .tiny { margin-top: var(--space-4); font-size: var(--text-xs); color: rgba(248,244,235,.65); }
+    .hidden { display: none !important; }
+    .footer-note { font-size: var(--text-xs); color: var(--color-text-faint); }
+    @media (max-width: 980px) {
+      body { overflow: auto; }
+      .shell { grid-template-columns: 1fr; }
+      canvas { height: 62vh; min-height: 420px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <aside class="panel sidebar">
+      <div>
+        <div class="brand">
+          <svg viewBox="0 0 64 64" fill="none" aria-label="Neon Dash Rescue logo">
+            <path d="M12 34L28 18L37 27L52 12" stroke="currentColor" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M12 50H52" stroke="currentColor" stroke-width="7" stroke-linecap="round"/>
+            <circle cx="47" cy="17" r="5" fill="currentColor"/>
+          </svg>
+          <div>
+            <div class="stat-label">GitHub first game</div>
+            <h2>Neon Dash Rescue</h2>
+          </div>
+        </div>
+        <h1>Dash, dodge, rescue tiny bots.</h1>
+        <p class="lede">Collect battery cells, save stranded mini-robots, and survive long enough to post a very cool first game project.</p>
+      </div>
+
+      <section>
+        <h2>Live stats</h2>
+        <div class="stats">
+          <article class="stat-card"><span class="stat-label">Score</span><div class="stat-value" id="scoreStat">0</div></article>
+          <article class="stat-card"><span class="stat-label">Best</span><div class="stat-value" id="bestStat">0</div></article>
+          <article class="stat-card"><span class="stat-label">Rescued</span><div class="stat-value" id="rescuedStat">0</div></article>
+          <article class="stat-card"><span class="stat-label">Energy</span><div class="stat-value" id="energyStat">100</div></article>
+        </div>
+      </section>
+
+      <section class="controls">
+        <h2>How to play</h2>
+        <ul>
+          <li><strong>Move:</strong> Arrow keys or WASD.</li>
+          <li><strong>Goal:</strong> Grab yellow battery cells and touch blue mini-bots.</li>
+          <li><strong>Avoid:</strong> Red glitch orbs. One hit ends the run.</li>
+          <li><strong>Win style:</strong> Chain pickups to keep your energy high.</li>
+        </ul>
+      </section>
+
+      <section class="notes">
+        <h2>Project notes</h2>
+        <ul>
+          <li>Single HTML file, easy to upload to GitHub.</li>
+          <li>No frameworks, so it is beginner friendly.</li>
+          <li>Includes procedural sound and responsive canvas.</li>
+        </ul>
+      </section>
+
+      <div class="actions">
+        <button class="btn btn-primary" id="startBtn">Start game</button>
+        <button class="btn btn-secondary" id="pauseBtn">Pause</button>
+      </div>
+      <p class="footer-note">Tip: rename the file or keep it as-is and publish it with GitHub Pages.</p>
+    </aside>
+
+    <section class="game-wrap" aria-label="Game area">
+      <canvas id="game" width="1280" height="720"></canvas>
+      <div class="hud">
+        <div class="pill" id="hudMission">Mission: rescue 0 bots</div>
+        <div class="pill" id="hudTimer">Time 0.0s</div>
+      </div>
+      <div class="overlay" id="overlay">
+        <div class="overlay-card" id="overlayCard">
+          <div class="stat-label">Arcade mission</div>
+          <h1 id="overlayTitle">Ready to roll?</h1>
+          <p id="overlayText">Start a run, rescue as many mini-bots as you can, and dodge the glitch swarm.</p>
+          <div class="actions">
+            <button class="btn btn-primary" id="overlayStartBtn">Play now</button>
+          </div>
+          <div class="tiny">Works on desktop and mobile keyboards. Audio starts after your first click.</div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const canvas = document.getElementById('game');
+    const ctx = canvas.getContext('2d');
+    const overlay = document.getElementById('overlay');
+    const overlayTitle = document.getElementById('overlayTitle');
+    const overlayText = document.getElementById('overlayText');
+    const startBtn = document.getElementById('startBtn');
+    const overlayStartBtn = document.getElementById('overlayStartBtn');
+    const pauseBtn = document.getElementById('pauseBtn');
+    const scoreStat = document.getElementById('scoreStat');
+    const bestStat = document.getElementById('bestStat');
+    const rescuedStat = document.getElementById('rescuedStat');
+    const energyStat = document.getElementById('energyStat');
+    const hudMission = document.getElementById('hudMission');
+    const hudTimer = document.getElementById('hudTimer');
+
+    const DPR = Math.max(1, Math.min(2, window.devicePixelRatio || 1));
+    const state = {
+      running: false,
+      paused: false,
+      score: 0,
+      best: 0,
+      rescued: 0,
+      energy: 100,
+      time: 0,
+      pickups: [],
+      bots: [],
+      enemies: [],
+      particles: [],
+      keys: new Set(),
+      lastTime: 0,
+      spawnPickup: 0,
+      spawnEnemy: 0,
+      spawnBot: 0,
+      audioCtx: null,
+      mobileMessageShown: false,
+      player: { x: 180, y: 360, r: 18, speed: 320, glow: 0 }
+    };
+
+    function resize() {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * DPR);
+      canvas.height = Math.round(rect.height * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function rand(min, max) { return Math.random() * (max - min) + min; }
+    function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
+    function distance(a, b) { return Math.hypot(a.x - b.x, a.y - b.y); }
+
+    function ensureAudio() {
+      if (!state.audioCtx) state.audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (state.audioCtx.state === 'suspended') state.audioCtx.resume();
+    }
+    function beep(freq, duration, type = 'sine', volume = 0.03) {
+      if (!state.audioCtx) return;
+      const ctxA = state.audioCtx;
+      const osc = ctxA.createOscillator();
+      const gain = ctxA.createGain();
+      osc.type = type; osc.frequency.value = freq;
+      gain.gain.value = volume;
+      gain.gain.exponentialRampToValueAtTime(0.0001, ctxA.currentTime + duration);
+      osc.connect(gain).connect(ctxA.destination);
+      osc.start(); osc.stop(ctxA.currentTime + duration);
+    }
+
+    function resetGame() {
+      state.running = true; state.paused = false; state.score = 0; state.rescued = 0; state.energy = 100; state.time = 0;
+      state.pickups = []; state.bots = []; state.enemies = []; state.particles = [];
+      state.spawnPickup = 0; state.spawnEnemy = 0; state.spawnBot = 0;
+      state.player.x = 180; state.player.y = canvas.clientHeight / 2; state.player.glow = 0;
+      overlay.classList.add('hidden');
+      pauseBtn.textContent = 'Pause';
+      spawnPickup(); spawnPickup(); spawnBot();
+      syncUI();
+    }
+
+    function endGame() {
+      state.running = false;
+      state.best = Math.max(state.best, state.score);
+      overlayTitle.textContent = 'Run over';
+      overlayText.textContent = `You scored ${state.score}, rescued ${state.rescued} bots, and lasted ${state.time.toFixed(1)} seconds.`;
+      overlay.classList.remove('hidden');
+      overlayStartBtn.textContent = 'Play again';
+      syncUI();
+      beep(160, 0.4, 'sawtooth', 0.05);
+    }
+
+    function togglePause() {
+      if (!state.running) return;
+      state.paused = !state.paused;
+      pauseBtn.textContent = state.paused ? 'Resume' : 'Pause';
+      if (state.paused) {
+        overlayTitle.textContent = 'Paused';
+        overlayText.textContent = 'Catch your breath, then jump right back into the run.';
+        overlay.classList.remove('hidden');
+        overlayStartBtn.textContent = 'Resume';
+      } else {
+        overlay.classList.add('hidden');
+      }
+    }
+
+    function spawnPickup() {
+      state.pickups.push({ x: rand(260, canvas.clientWidth - 40), y: rand(40, canvas.clientHeight - 40), r: 10, pulse: rand(0, Math.PI) });
+    }
+    function spawnBot() {
+      state.bots.push({ x: rand(300, canvas.clientWidth - 50), y: rand(50, canvas.clientHeight - 50), r: 14, bob: rand(0, Math.PI * 2) });
+    }
+    function spawnEnemy() {
+      const side = Math.random() > 0.5 ? -30 : canvas.clientWidth + 30;
+      state.enemies.push({ x: side, y: rand(30, canvas.clientHeight - 30), r: rand(14, 22), vx: side < 0 ? rand(90, 180) : rand(-180, -90), vy: rand(-70, 70), hue: rand(0, 25) });
+    }
+    function burst(x, y, color, amount = 12) {
+      for (let i = 0; i < amount; i++) {
+        state.particles.push({ x, y, vx: rand(-2.6, 2.6), vy: rand(-2.6, 2.6), life: rand(18, 36), color });
+      }
+    }
+
+    function syncUI() {
+      scoreStat.textContent = Math.floor(state.score);
+      bestStat.textContent = Math.floor(Math.max(state.best, state.score));
+      rescuedStat.textContent = state.rescued;
+      energyStat.textContent = Math.max(0, Math.floor(state.energy));
+      hudMission.textContent = `Mission: rescue ${state.rescued} bots`;
+      hudTimer.textContent = `Time ${state.time.toFixed(1)}s`;
+    }
+
+    function update(dt) {
+      if (!state.running || state.paused) return;
+      const player = state.player;
+      state.time += dt;
+      state.energy -= dt * 3.2;
+      state.spawnPickup += dt; state.spawnEnemy += dt; state.spawnBot += dt;
+      if (state.spawnPickup > 1.1 && state.pickups.length < 5) { state.spawnPickup = 0; spawnPickup(); }
+      if (state.spawnEnemy > Math.max(0.55, 1.3 - state.time * 0.02) && state.enemies.length < 12) { state.spawnEnemy = 0; spawnEnemy(); }
+      if (state.spawnBot > 4.8 && state.bots.length < 2) { state.spawnBot = 0; spawnBot(); }
+
+      let dx = 0, dy = 0;
+      if (state.keys.has('ArrowUp') || state.keys.has('w')) dy -= 1;
+      if (state.keys.has('ArrowDown') || state.keys.has('s')) dy += 1;
+      if (state.keys.has('ArrowLeft') || state.keys.has('a')) dx -= 1;
+      if (state.keys.has('ArrowRight') || state.keys.has('d')) dx += 1;
+      if (dx || dy) {
+        const len = Math.hypot(dx, dy) || 1;
+        player.x += (dx / len) * player.speed * dt;
+        player.y += (dy / len) * player.speed * dt;
+      }
+      player.x = clamp(player.x, 18, canvas.clientWidth - 18);
+      player.y = clamp(player.y, 18, canvas.clientHeight - 18);
+      player.glow = Math.max(0, player.glow - dt * 2.5);
+
+      state.pickups.forEach(p => p.pulse += dt * 4);
+      state.bots.forEach(b => b.bob += dt * 3.2);
+      state.enemies.forEach(e => {
+        e.x += e.vx * dt;
+        e.y += e.vy * dt;
+        if (e.y < 20 || e.y > canvas.clientHeight - 20) e.vy *= -1;
+        const angle = Math.atan2(player.y - e.y, player.x - e.x);
+        e.vx += Math.cos(angle) * dt * 18;
+        e.vy += Math.sin(angle) * dt * 18;
+      });
+      state.enemies = state.enemies.filter(e => e.x > -60 && e.x < canvas.clientWidth + 60);
+
+      state.pickups = state.pickups.filter(p => {
+        if (distance(player, p) < player.r + p.r + 2) {
+          state.score += 15;
+          state.energy = Math.min(100, state.energy + 12);
+          player.glow = 1;
+          burst(p.x, p.y, '#ffca61', 10);
+          beep(680, 0.12, 'triangle', 0.035);
+          return false;
+        }
+        return true;
+      });
+
+      state.bots = state.bots.filter(b => {
+        if (distance(player, b) < player.r + b.r + 4) {
+          state.score += 50;
+          state.rescued += 1;
+          state.energy = Math.min(100, state.energy + 20);
+          burst(b.x, b.y, '#6fd3ff', 18);
+          beep(420, 0.18, 'square', 0.04);
+          beep(620, 0.22, 'square', 0.03);
+          return false;
+        }
+        return true;
+      });
+
+      for (const e of state.enemies) {
+        if (distance(player, e) < player.r + e.r) {
+          burst(player.x, player.y, '#ff6b7a', 24);
+          endGame();
+          return;
+        }
+      }
+
+      state.particles.forEach(p => { p.x += p.vx; p.y += p.vy; p.life -= 1; });
+      state.particles = state.particles.filter(p => p.life > 0);
+
+      if (state.energy <= 0) endGame();
+      state.best = Math.max(state.best, state.score);
+      syncUI();
+    }
+
+    function drawGrid(w, h) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(95, 220, 210, 0.08)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < w; x += 48) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
+      for (let y = 0; y < h; y += 48) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
+      ctx.restore();
+    }
+
+    function draw() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      const bg = ctx.createLinearGradient(0, 0, 0, h);
+      bg.addColorStop(0, '#101923'); bg.addColorStop(1, '#090b10');
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, w, h);
+
+      const glow1 = ctx.createRadialGradient(w * 0.15, h * 0.2, 20, w * 0.15, h * 0.2, 220);
+      glow1.addColorStop(0, 'rgba(73,215,207,.28)'); glow1.addColorStop(1, 'rgba(73,215,207,0)');
+      ctx.fillStyle = glow1; ctx.fillRect(0, 0, w, h);
+      const glow2 = ctx.createRadialGradient(w * 0.82, h * 0.78, 10, w * 0.82, h * 0.78, 240);
+      glow2.addColorStop(0, 'rgba(255,107,122,.18)'); glow2.addColorStop(1, 'rgba(255,107,122,0)');
+      ctx.fillStyle = glow2; ctx.fillRect(0, 0, w, h);
+
+      drawGrid(w, h);
+
+      state.pickups.forEach(p => {
+        const r = p.r + Math.sin(p.pulse) * 2.5;
+        ctx.beginPath(); ctx.fillStyle = '#ffca61'; ctx.shadowColor = '#ffca61'; ctx.shadowBlur = 18;
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      state.bots.forEach(b => {
+        const y = b.y + Math.sin(b.bob) * 6;
+        ctx.fillStyle = '#7fdcff'; ctx.shadowColor = '#7fdcff'; ctx.shadowBlur = 18;
+        ctx.fillRect(b.x - 10, y - 10, 20, 20);
+        ctx.fillStyle = '#dff8ff'; ctx.fillRect(b.x - 5, y - 16, 10, 8);
+        ctx.shadowBlur = 0;
+      });
+
+      state.enemies.forEach(e => {
+        ctx.beginPath(); ctx.fillStyle = '#ff6b7a'; ctx.shadowColor = '#ff6b7a'; ctx.shadowBlur = 18;
+        ctx.arc(e.x, e.y, e.r, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#25050b'; ctx.beginPath(); ctx.arc(e.x - 4, e.y - 2, 3, 0, Math.PI * 2); ctx.arc(e.x + 5, e.y - 2, 3, 0, Math.PI * 2); ctx.fill();
+        ctx.shadowBlur = 0;
+      });
+
+      state.particles.forEach(p => {
+        ctx.globalAlpha = p.life / 36;
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x, p.y, 4, 4);
+      });
+      ctx.globalAlpha = 1;
+
+      const player = state.player;
+      ctx.beginPath();
+      ctx.fillStyle = '#49d7cf'; ctx.shadowColor = '#49d7cf'; ctx.shadowBlur = 22 + player.glow * 18;
+      ctx.arc(player.x, player.y, player.r, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#eafefe'; ctx.beginPath(); ctx.arc(player.x + 3, player.y - 4, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = 'rgba(255,255,255,.12)';
+      ctx.fillRect(0, h - 12, w, 12);
+      ctx.fillStyle = state.energy > 30 ? '#49d7cf' : '#ffca61';
+      ctx.fillRect(0, h - 12, (w * clamp(state.energy, 0, 100)) / 100, 12);
+    }
+
+    function loop(ts) {
+      if (!state.lastTime) state.lastTime = ts;
+      const dt = Math.min(0.032, (ts - state.lastTime) / 1000);
+      state.lastTime = ts;
+      update(dt);
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    function startFlow() {
+      ensureAudio();
+      if (!state.running) resetGame();
+      else if (state.paused) togglePause();
+    }
+
+    startBtn.addEventListener('click', startFlow);
+    overlayStartBtn.addEventListener('click', startFlow);
+    pauseBtn.addEventListener('click', () => { ensureAudio(); togglePause(); });
+
+    window.addEventListener('keydown', (e) => {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      if (["ArrowUp","ArrowDown","ArrowLeft","ArrowRight"," "].includes(e.key)) e.preventDefault();
+      if (key === 'p') togglePause();
+      if (key === 'enter' && !state.running) startFlow();
+      state.keys.add(key);
+    });
+    window.addEventListener('keyup', (e) => {
+      const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+      state.keys.delete(key);
+    });
+
+    draw();
+    requestAnimationFrame(loop);
+  </script>
+</body>
+</html>
